@@ -1,4 +1,4 @@
-package com.akbar.photosapi.list_photo
+package com.akbar.photosapi.list_photo.fragment
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
