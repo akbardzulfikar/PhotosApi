@@ -1,11 +1,17 @@
 package com.akbar.photosapi.list_photo.fragment
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import com.akbar.photosapi.databinding.FragmentListPhotoBinding
+import com.akbar.photosapi.list_photo.network.RequestStatus
+import com.akbar.photosapi.list_photo.viewmodel.PhotoViewModel
+import com.akbar.photosapi.util.gone
+import com.akbar.photosapi.util.visible
 import dagger.hilt.android.AndroidEntryPoint
 
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -17,6 +23,7 @@ class ListPhotoFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private lateinit var binding: FragmentListPhotoBinding
+    private val photoViewModel: PhotoViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +40,30 @@ class ListPhotoFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentListPhotoBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        observePhoto()
+    }
+
+    private fun observePhoto() {
+        photoViewModel.getPhotos().observe(viewLifecycleOwner, {
+            when (it.requestStatus) {
+                RequestStatus.LOADING -> {
+                    Log.d("result", it.toString())
+                    binding.progressBar.visible()
+                }
+                RequestStatus.SUCCESS -> {
+                    Log.d("result", it.toString())
+                    binding.progressBar.gone()
+                }
+                RequestStatus.ERROR -> {
+                    Log.d("result", it.toString())
+                    binding.progressBar.gone()
+                }
+            }
+        })
     }
 
     companion object {
