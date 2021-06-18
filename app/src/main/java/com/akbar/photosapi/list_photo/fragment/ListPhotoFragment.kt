@@ -2,10 +2,10 @@ package com.akbar.photosapi.list_photo.fragment
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.akbar.photosapi.R
@@ -18,7 +18,6 @@ import com.akbar.photosapi.list_photo.viewmodel.PhotoViewModel
 import com.akbar.photosapi.util.GeneralSnackbar
 import com.akbar.photosapi.util.gone
 import com.akbar.photosapi.util.visible
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 private const val ARG_PARAM1 = "param1"

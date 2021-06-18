@@ -4,7 +4,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.akbar.photosapi.R
 import com.akbar.photosapi.databinding.ItemPhotoLayoutBinding
 import com.akbar.photosapi.list_photo.model.Photo
-import com.bumptech.glide.Glide
 import com.squareup.picasso.Picasso
 
 class PopularPhotoViewHolder(
