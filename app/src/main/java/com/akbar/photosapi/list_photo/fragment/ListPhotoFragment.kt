@@ -8,12 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
+import com.akbar.photosapi.R
 import com.akbar.photosapi.databinding.FragmentListPhotoBinding
 import com.akbar.photosapi.list_photo.adapter.PhotoAdapter
 import com.akbar.photosapi.list_photo.model.Photo
 import com.akbar.photosapi.list_photo.network.RequestStatus
 import com.akbar.photosapi.list_photo.viewmodel.LocalViewModel
 import com.akbar.photosapi.list_photo.viewmodel.PhotoViewModel
+import com.akbar.photosapi.util.GeneralSnackbar
 import com.akbar.photosapi.util.gone
 import com.akbar.photosapi.util.visible
 import com.google.android.material.snackbar.Snackbar
@@ -30,7 +32,6 @@ class ListPhotoFragment : Fragment() {
     private val photoViewModel: PhotoViewModel by viewModels()
     private val localViewModel: LocalViewModel by viewModels()
     private var photosData: List<Photo> = emptyList()
-    private var counter: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,12 +53,11 @@ class ListPhotoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observePhoto()
-        if (photosData.isNullOrEmpty())
-            callApi()
     }
 
     private fun observePhoto() {
         localViewModel.getAllPhotos().observe(viewLifecycleOwner, { it1 ->
+            binding.progressBar.visible()
             if (!it1.isNullOrEmpty()) {
                 photosData = it1
                 val photoAdapter = PhotoAdapter(photosData)
@@ -65,6 +65,9 @@ class ListPhotoFragment : Fragment() {
                 binding.rvListPhoto.adapter = photoAdapter
                 binding.rvListPhoto.visible()
                 binding.progressBar.gone()
+            }
+            else {
+                callApi()
             }
         })
     }
@@ -99,12 +102,11 @@ class ListPhotoFragment : Fragment() {
                 RequestStatus.ERROR -> {
                     Log.d("result", it.toString())
                     binding.progressBar.gone()
-                    it.message?.let { it1 ->
-                        Snackbar.make(
-                            binding.root,
-                            it1, Snackbar.LENGTH_SHORT
-                        )
-                    }
+                    GeneralSnackbar.showErrorSnackBar(
+                        binding.root,
+                        it?.message ?: getString(R.string.error_server),
+                        binding.root.context
+                    )
                 }
             }
         })
