@@ -15,4 +15,9 @@ class LocalPhotoDataSourceImpl @Inject constructor(
     override suspend fun insertPhoto(photo: Photo) {
         return photoDao.insert(photo)
     }
+
+    override fun searchTitle(photo: String): List<Photo>? {
+        return photoDao.searchTitle(photo)
+    }
+
 }

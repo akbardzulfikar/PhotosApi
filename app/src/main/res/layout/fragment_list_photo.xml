@@ -13,25 +13,40 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+
+    <SearchView
+        android:id="@+id/searcUser"
+        style="@style/SearchViewTheme"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_margin="12dp"
+        android:background="@drawable/ic_shape"
+        android:iconifiedByDefault="false"
+        android:queryBackground="@null"
+        android:queryHint="@string/search_by_name"
+        android:theme="@style/SearchViewTheme"
+        app:layout_constraintTop_toBottomOf="@id/genericToolbar" />
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/genericToolbar">
+        app:layout_constraintTop_toBottomOf="@id/searcUser">
 
         <LinearLayout
             android:id="@+id/linear"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:layout_marginBottom="20dp"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/genericToolbar"
             app:layout_constraintVertical_bias="0">
+
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvListPhoto"

@@ -21,7 +21,7 @@ object DatabaseModule {
         context,
         PhotoDatabase::class.java,
         "photo_db"
-    ).build()
+    ).allowMainThreadQueries().build()
 
     @Singleton
     @Provides

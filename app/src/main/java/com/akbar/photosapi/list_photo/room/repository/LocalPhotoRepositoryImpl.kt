@@ -28,4 +28,8 @@ class LocalPhotoRepositoryImpl @Inject constructor(
         localPhotoDataSource.insertPhoto(photo)
         emit(State.success(InsertResponse.INSERTED))
     }
+
+    override fun searchTitle(photo: String): List<Photo>? {
+        return localPhotoDataSource.searchTitle(photo)
+    }
 }

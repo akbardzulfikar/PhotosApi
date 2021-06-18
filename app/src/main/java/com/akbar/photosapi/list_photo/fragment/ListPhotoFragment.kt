@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
@@ -51,6 +52,25 @@ class ListPhotoFragment : Fragment() {
         binding.swipeRefresh.setOnRefreshListener {
             callApi()
         }
+        binding.searcUser.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (query != null) {
+                    if (query.isNotEmpty()) {
+                        localViewModel.searchTitle(query).let { photos ->
+                            val photoAdapter = photos?.let { PhotoAdapter(it) }
+                            binding.rvListPhoto.layoutManager =
+                                GridLayoutManager(requireContext(), 2)
+                            binding.rvListPhoto.adapter = photoAdapter
+                        }
+                    }
+                }
+                return false
+            }
+        })
         observePhoto()
     }
 

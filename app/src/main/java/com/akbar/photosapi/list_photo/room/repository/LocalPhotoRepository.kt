@@ -9,4 +9,5 @@ import com.akbar.photosapi.list_photo.room.helper.InsertResponse
 interface LocalPhotoRepository {
     fun getAllPhoto(): LiveData<PagedList<Photo>>
     fun insertPhoto(photo: Photo): LiveData<State<InsertResponse>>
+    fun searchTitle(photo: String): List<Photo>?
 }

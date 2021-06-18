@@ -17,4 +17,7 @@ interface PhotoDao {
 
     @Query("SELECT * FROM photo ORDER BY id DESC")
     fun getAll(): DataSource.Factory<Int, Photo>
+
+    @Query("SELECT * FROM photo WHERE title LIKE '%' || :title || '%'")
+    fun searchTitle(title: String?): List<Photo>?
 }

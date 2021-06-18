@@ -21,4 +21,8 @@ class LocalViewModel @Inject constructor(
     fun insertPhoto(photo: Photo): LiveData<State<InsertResponse>> {
         return localPhotoRepository.insertPhoto(photo)
     }
+
+    fun searchTitle(photo: String) : List<Photo>? {
+        return localPhotoRepository.searchTitle(photo)
+    }
 }

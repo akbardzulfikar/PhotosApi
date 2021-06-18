@@ -6,4 +6,5 @@ import com.akbar.photosapi.list_photo.model.Photo
 interface LocalPhotoDataSource {
     fun getAllPhoto(): DataSource.Factory<Int, Photo>
     suspend fun insertPhoto(photo: Photo)
+    fun searchTitle(photo: String): List<Photo>?
 }
