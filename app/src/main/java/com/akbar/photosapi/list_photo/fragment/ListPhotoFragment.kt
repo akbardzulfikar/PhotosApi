@@ -17,6 +17,7 @@ import com.akbar.photosapi.list_photo.network.RequestStatus
 import com.akbar.photosapi.list_photo.viewmodel.LocalViewModel
 import com.akbar.photosapi.list_photo.viewmodel.PhotoViewModel
 import com.akbar.photosapi.util.GeneralSnackbar
+import com.akbar.photosapi.util.doAsync
 import com.akbar.photosapi.util.gone
 import com.akbar.photosapi.util.visible
 import dagger.hilt.android.AndroidEntryPoint
@@ -52,6 +53,7 @@ class ListPhotoFragment : Fragment() {
         binding.swipeRefresh.setOnRefreshListener {
             callApi()
         }
+
         binding.searcUser.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String?): Boolean {
                 return false
@@ -60,12 +62,25 @@ class ListPhotoFragment : Fragment() {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (query != null) {
                     if (query.isNotEmpty()) {
-                        localViewModel.searchTitle(query).let { photos ->
-                            val photoAdapter = photos?.let { PhotoAdapter(it) }
-                            binding.rvListPhoto.layoutManager =
-                                GridLayoutManager(requireContext(), 2)
-                            binding.rvListPhoto.adapter = photoAdapter
-                        }
+
+                        localViewModel.execute(onPreExecute = {
+
+                        }, doInBackground = {
+
+                        }, onPostExecute = {
+                            localViewModel.searchTitle(query).let { photos ->
+                                val photoAdapter = photos?.let { PhotoAdapter(it) }
+                                binding.rvListPhoto.layoutManager =
+                                    GridLayoutManager(requireContext(), 2)
+                                binding.rvListPhoto.adapter = photoAdapter
+                            }
+                            // ... here "it" contains data returned from "doInBackground"
+                        })
+
+//                        doAsync {
+//
+//
+//                        }.execute()
                     }
                 }
                 return false
@@ -84,14 +99,13 @@ class ListPhotoFragment : Fragment() {
                 binding.rvListPhoto.adapter = photoAdapter
                 binding.rvListPhoto.visible()
                 binding.progressBar.gone()
-            }
-            else {
+            } else {
                 callApi()
             }
         })
     }
 
-    private fun callApi(){
+    private fun callApi() {
         photoViewModel.getPhotos().observe(viewLifecycleOwner, {
             when (it.requestStatus) {
                 RequestStatus.LOADING -> {
