@@ -17,7 +17,6 @@ import com.akbar.photosapi.list_photo.network.RequestStatus
 import com.akbar.photosapi.list_photo.viewmodel.LocalViewModel
 import com.akbar.photosapi.list_photo.viewmodel.PhotoViewModel
 import com.akbar.photosapi.util.GeneralSnackbar
-import com.akbar.photosapi.util.doAsync
 import com.akbar.photosapi.util.gone
 import com.akbar.photosapi.util.visible
 import dagger.hilt.android.AndroidEntryPoint
