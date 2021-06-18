@@ -20,8 +20,6 @@ import com.akbar.photosapi.util.gone
 import com.akbar.photosapi.util.visible
 import dagger.hilt.android.AndroidEntryPoint
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 @AndroidEntryPoint
 class ListPhotoFragment : Fragment() {
@@ -35,8 +33,6 @@ class ListPhotoFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
         }
     }
 
@@ -51,6 +47,10 @@ class ListPhotoFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.genericToolbar.genericToolbarTitle.text = getString(R.string.list_photos_app)
+        binding.swipeRefresh.setOnRefreshListener {
+            callApi()
+        }
         observePhoto()
     }
 
@@ -81,7 +81,6 @@ class ListPhotoFragment : Fragment() {
                 }
                 RequestStatus.SUCCESS -> {
                     Log.d("result", it.toString())
-                    binding.progressBar.gone()
                     it.data?.let { list ->
                         val photoAdapter = PhotoAdapter(list)
                         binding.rvListPhoto.layoutManager =
@@ -96,6 +95,8 @@ class ListPhotoFragment : Fragment() {
                                 }
                             })
                         }
+                        binding.progressBar.gone()
+                        stopSwipeRefresh()
                     }
                 }
                 RequestStatus.ERROR -> {
@@ -106,19 +107,14 @@ class ListPhotoFragment : Fragment() {
                         it?.message ?: getString(R.string.error_server),
                         binding.root.context
                     )
+                    stopSwipeRefresh()
                 }
             }
         })
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            ListPhotoFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    private fun stopSwipeRefresh() {
+        if (binding.swipeRefresh != null)
+            if (binding.swipeRefresh.isRefreshing) binding.swipeRefresh.isRefreshing = false
     }
 }
