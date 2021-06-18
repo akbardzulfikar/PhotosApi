@@ -10,7 +10,9 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.akbar.photosapi.databinding.FragmentListPhotoBinding
 import com.akbar.photosapi.list_photo.adapter.PhotoAdapter
+import com.akbar.photosapi.list_photo.model.Photo
 import com.akbar.photosapi.list_photo.network.RequestStatus
+import com.akbar.photosapi.list_photo.viewmodel.LocalViewModel
 import com.akbar.photosapi.list_photo.viewmodel.PhotoViewModel
 import com.akbar.photosapi.util.gone
 import com.akbar.photosapi.util.visible
@@ -26,6 +28,9 @@ class ListPhotoFragment : Fragment() {
     private var param2: String? = null
     private lateinit var binding: FragmentListPhotoBinding
     private val photoViewModel: PhotoViewModel by viewModels()
+    private val localViewModel: LocalViewModel by viewModels()
+    private var photosData: List<Photo> = emptyList()
+    private var counter: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,9 +52,24 @@ class ListPhotoFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observePhoto()
+        if (photosData.isNullOrEmpty())
+            callApi()
     }
 
     private fun observePhoto() {
+        localViewModel.getAllPhotos().observe(viewLifecycleOwner, { it1 ->
+            if (!it1.isNullOrEmpty()) {
+                photosData = it1
+                val photoAdapter = PhotoAdapter(photosData)
+                binding.rvListPhoto.layoutManager = GridLayoutManager(requireContext(), 2)
+                binding.rvListPhoto.adapter = photoAdapter
+                binding.rvListPhoto.visible()
+                binding.progressBar.gone()
+            }
+        })
+    }
+
+    private fun callApi(){
         photoViewModel.getPhotos().observe(viewLifecycleOwner, {
             when (it.requestStatus) {
                 RequestStatus.LOADING -> {
@@ -62,11 +82,19 @@ class ListPhotoFragment : Fragment() {
                     binding.progressBar.gone()
                     it.data?.let { list ->
                         val photoAdapter = PhotoAdapter(list)
-                        binding.rvListPhoto.layoutManager = GridLayoutManager(requireContext(), 2)
+                        binding.rvListPhoto.layoutManager =
+                            GridLayoutManager(requireContext(), 2)
                         binding.rvListPhoto.adapter = photoAdapter
                         binding.rvListPhoto.visible()
+                        list.forEach { photo ->
+                            localViewModel.insertPhoto(photo).observe(viewLifecycleOwner, { it2 ->
+                                when (it2.requestStatus) {
+                                    RequestStatus.SUCCESS -> {
+                                    }
+                                }
+                            })
+                        }
                     }
-
                 }
                 RequestStatus.ERROR -> {
                     Log.d("result", it.toString())
