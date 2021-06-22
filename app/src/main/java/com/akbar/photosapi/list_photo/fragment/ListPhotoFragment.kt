@@ -50,7 +50,7 @@ class ListPhotoFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.genericToolbar.genericToolbarTitle.text = getString(R.string.list_photos_app)
         binding.swipeRefresh.setOnRefreshListener {
-            callApi()
+            observePhoto()
         }
 
         binding.searcUser.setOnQueryTextListener(object : SearchView.OnQueryTextListener {

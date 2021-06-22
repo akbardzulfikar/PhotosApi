@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">PhotosApi</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="error_server">Tidak dapat menghubungi server</string>
+    <string name="error_server">No internet connection</string>
     <string name="list_photos_app">List Photos App</string>
     <string name="search_by_name">Search By Name</string>
 </resources>
