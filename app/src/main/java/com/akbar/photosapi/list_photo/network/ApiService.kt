@@ -7,5 +7,5 @@ import retrofit2.http.GET
 interface ApiService {
     @GET("photos")
     suspend fun getPhotos(
-    ): Response<List<Photo>>
+    ): List<Photo>
 }

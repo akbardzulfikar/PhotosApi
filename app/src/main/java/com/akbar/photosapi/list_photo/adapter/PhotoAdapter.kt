@@ -4,9 +4,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.akbar.photosapi.databinding.ItemPhotoLayoutBinding
-import com.akbar.photosapi.list_photo.model.Photo
+import com.akbar.photosapi.list_photo.model.PhotoResponse
 
-class PhotoAdapter(private val photo: List<Photo>) :
+class PhotoAdapter(private val photo: List<PhotoResponse>) :
     RecyclerView.Adapter<PopularPhotoViewHolder>() {
 
     override fun onCreateViewHolder(

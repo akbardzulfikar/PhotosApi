@@ -14,6 +14,7 @@ import com.akbar.photosapi.databinding.FragmentListPhotoBinding
 import com.akbar.photosapi.list_photo.adapter.PhotoAdapter
 import com.akbar.photosapi.list_photo.model.Photo
 import com.akbar.photosapi.list_photo.network.RequestStatus
+import com.akbar.photosapi.list_photo.network.Resource
 import com.akbar.photosapi.list_photo.viewmodel.LocalViewModel
 import com.akbar.photosapi.list_photo.viewmodel.PhotoViewModel
 import com.akbar.photosapi.util.GeneralSnackbar
@@ -50,97 +51,101 @@ class ListPhotoFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.genericToolbar.genericToolbarTitle.text = getString(R.string.list_photos_app)
         binding.swipeRefresh.setOnRefreshListener {
-            observePhoto()
+//            observePhoto()
         }
 
-        binding.searcUser.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextChange(newText: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                if (query != null) {
-                    if (query.isNotEmpty()) {
-
-                        localViewModel.execute(onPreExecute = {
-
-                        }, doInBackground = {
-
-                        }, onPostExecute = {
-                            localViewModel.searchTitle(query).let { photos ->
-                                val photoAdapter = photos?.let { PhotoAdapter(it) }
-                                binding.rvListPhoto.layoutManager =
-                                    GridLayoutManager(requireContext(), 2)
-                                binding.rvListPhoto.adapter = photoAdapter
-                            }
-                            // ... here "it" contains data returned from "doInBackground"
-                        })
-
-//                        doAsync {
+//        binding.searcUser.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+//            override fun onQueryTextChange(newText: String?): Boolean {
+//                return false
+//            }
 //
+//            override fun onQueryTextSubmit(query: String?): Boolean {
+//                if (query != null) {
+//                    if (query.isNotEmpty()) {
 //
-//                        }.execute()
-                    }
-                }
-                return false
-            }
-        })
-        observePhoto()
+//                        localViewModel.execute(onPreExecute = {
+//
+//                        }, doInBackground = {
+//
+//                        }, onPostExecute = {
+//                            localViewModel.searchTitle(query).let { photos ->
+//                                val photoAdapter = photos?.let { PhotoAdapter(it) }
+//                                binding.rvListPhoto.layoutManager =
+//                                    GridLayoutManager(requireContext(), 2)
+//                                binding.rvListPhoto.adapter = photoAdapter
+//                            }
+//                            // ... here "it" contains data returned from "doInBackground"
+//                        })
+//
+////                        doAsync {
+////
+////
+////                        }.execute()
+//                    }
+//                }
+//                return false
+//            }
+//        })
+//        observePhoto()
+        callApi()
     }
 
-    private fun observePhoto() {
-        localViewModel.getAllPhotos().observe(viewLifecycleOwner, { it1 ->
-            binding.progressBar.visible()
-            if (!it1.isNullOrEmpty()) {
-                photosData = it1
-                val photoAdapter = PhotoAdapter(photosData)
-                binding.rvListPhoto.layoutManager = GridLayoutManager(requireContext(), 2)
-                binding.rvListPhoto.adapter = photoAdapter
-                binding.rvListPhoto.visible()
-                binding.progressBar.gone()
-            } else {
-                callApi()
-            }
-        })
-    }
+//    private fun observePhoto() {
+//        localViewModel.getAllPhotos().observe(viewLifecycleOwner, { it1 ->
+//            binding.progressBar.visible()
+//            if (!it1.isNullOrEmpty()) {
+//                photosData = it1
+//                val photoAdapter = PhotoAdapter(photosData)
+//                binding.rvListPhoto.layoutManager = GridLayoutManager(requireContext(), 2)
+//                binding.rvListPhoto.adapter = photoAdapter
+//                binding.rvListPhoto.visible()
+//                binding.progressBar.gone()
+//            } else {
+//                callApi()
+//            }
+//        })
+//    }
 
     private fun callApi() {
-        photoViewModel.getPhotos().observe(viewLifecycleOwner, {
-            when (it.requestStatus) {
-                RequestStatus.LOADING -> {
-                    Log.d("result", it.toString())
-                    binding.progressBar.visible()
-                    binding.rvListPhoto.gone()
-                }
-                RequestStatus.SUCCESS -> {
-                    Log.d("result", it.toString())
-                    it.data?.let { list ->
-                        val photoAdapter = PhotoAdapter(list)
-                        binding.rvListPhoto.layoutManager =
-                            GridLayoutManager(requireContext(), 2)
-                        binding.rvListPhoto.adapter = photoAdapter
-                        binding.rvListPhoto.visible()
-                        list.forEach { photo ->
-                            localViewModel.insertPhoto(photo).observe(viewLifecycleOwner, { it2 ->
-                                when (it2.requestStatus) {
-                                    RequestStatus.SUCCESS -> {
-                                    }
-                                }
-                            })
+        photoViewModel.photos.observe(viewLifecycleOwner, {
+            if (it != null) {
+                when (it) {
+                    is Resource.Loading -> {
+                        Log.d("result", it.toString())
+                        binding.progressBar.visible()
+                        binding.rvListPhoto.gone()
+                    }
+                    is Resource.Success -> {
+                        Log.d("result", it.toString())
+                        it.data?.let { list ->
+                            val photoAdapter = PhotoAdapter(list)
+                            binding.rvListPhoto.layoutManager =
+                                GridLayoutManager(requireContext(), 2)
+                            binding.rvListPhoto.adapter = photoAdapter
+                            binding.rvListPhoto.visible()
+//                            list.forEach { photo ->
+//                                localViewModel.insertPhoto(photo)
+//                                    .observe(viewLifecycleOwner, { it2 ->
+//                                        when (it2.requestStatus) {
+//                                            RequestStatus.SUCCESS -> {
+//                                            }
+//                                        }
+//                                    })
+//                            }
+                            binding.progressBar.gone()
+                            stopSwipeRefresh()
                         }
+                    }
+                    is Resource.Error -> {
+                        Log.d("result", it.toString())
                         binding.progressBar.gone()
+                        GeneralSnackbar.showErrorSnackBar(
+                            binding.root,
+                            it?.message ?: getString(R.string.error_server),
+                            binding.root.context
+                        )
                         stopSwipeRefresh()
                     }
-                }
-                RequestStatus.ERROR -> {
-                    Log.d("result", it.toString())
-                    binding.progressBar.gone()
-                    GeneralSnackbar.showErrorSnackBar(
-                        binding.root,
-                        it?.message ?: getString(R.string.error_server),
-                        binding.root.context
-                    )
-                    stopSwipeRefresh()
                 }
             }
         })

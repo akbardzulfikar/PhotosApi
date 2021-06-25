@@ -2,6 +2,7 @@ package com.akbar.photosapi.list_photo.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import com.akbar.photosapi.list_photo.model.Photo
 import com.akbar.photosapi.list_photo.network.State
 import com.akbar.photosapi.list_photo.repository.PhotoRepository
@@ -14,5 +15,5 @@ class PhotoViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-    fun getPhotos(): LiveData<State<List<Photo>>> = remotePhotoRepository.getPhotos()
+    val photos = remotePhotoRepository.getPhotos().asLiveData()
 }
